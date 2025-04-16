@@ -1,58 +1,67 @@
 document.addEventListener("DOMContentLoaded", function () {
-  updateTotal();
+  const plusBtns = document.querySelectorAll(".fa-plus-circle");
+  const minusBtns = document.querySelectorAll(".fa-minus-circle");
+  const trashBtns = document.querySelectorAll(".fa-trash-alt");
+  const totalDisplay = document.querySelector(".total");
+  const heartBtns = document.querySelectorAll(".fa-heart");
 
-  // Like button
-  const likeButtons = document.querySelectorAll(".like-btn");
-  likeButtons.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      btn.classList.toggle("liked"); // Use CSS to change color when .liked is added
+  // fUnction to recalculate the total price
+  function updateTotal() {
+    let total = 0;
+    const cards = document.querySelectorAll(".card");
+
+    cards.forEach((card) => {
+      const price =
+        parseFloat(card.querySelector(".unit-price").textContent) || 0;
+      const quantity =
+        parseInt(card.querySelector(".quantity").textContent) || 0;
+      total += price * quantity;
     });
-  });
 
-  // Delete button
-  const deleteButtons = document.querySelectorAll(".delete-btn");
-  deleteButtons.forEach((btn) => {
+    totalDisplay.textContent = `${total.toLocaleString()}`;
+  }
+
+  // Increase quantity
+  plusBtns.forEach((btn) => {
     btn.addEventListener("click", function () {
-      const item = btn.closest(".cart-item");
-      item.remove();
+      const card = btn.closest(".card");
+      const quantityEl = card.querySelector(".quantity");
+      let quantity = parseInt(quantityEl.textContent) || 0;
+      quantity++;
+      quantityEl.textContent = quantity;
       updateTotal();
     });
   });
 
-  // Plus button
-  const plusButtons = document.querySelectorAll(".plus-btn");
-  plusButtons.forEach((btn) => {
+  minusBtns.forEach((btn) => {
     btn.addEventListener("click", function () {
-      const item = btn.closest(".cart-item");
-      const qty = item.querySelector(".quantity");
-      qty.value = parseInt(qty.value) + 1;
-      updateTotal();
-    });
-  });
-
-  // Minus button
-  const minusButtons = document.querySelectorAll(".minus-btn");
-  minusButtons.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const item = btn.closest(".cart-item");
-      const qty = item.querySelector(".quantity");
-      if (parseInt(qty.value) > 1) {
-        qty.value = parseInt(qty.value) - 1;
+      const card = btn.closest(".card");
+      const quantityEl = card.querySelector(".quantity");
+      let quantity = parseInt(quantityEl.textContent) || 0;
+      if (quantity > 0) {
+        quantity--;
+        quantityEl.textContent = quantity;
         updateTotal();
       }
     });
   });
 
-  function updateTotal() {
-    let total = 0;
-    const items = document.querySelectorAll(".cart-item");
-
-    items.forEach((item) => {
-      const price = parseFloat(item.querySelector(".item-price").textContent);
-      const quantity = parseInt(item.querySelector(".quantity").value);
-      total += price * quantity;
+  trashBtns.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const card = btn.closest(".card");
+      card.remove();
+      updateTotal();
     });
+  });
 
-    document.getElementById("total-price").textContent = total.toFixed(2);
-  }
+  updateTotal();
+
+  heartBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    btn.classList.toggle("liked");
+    btn.style.color = btn.classList.contains("liked") ? "red" : "black";
+  });
 });
+});
+
+
